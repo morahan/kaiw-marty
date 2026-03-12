@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { SignedIn, UserButton } from '@clerk/react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import './App.css';
 
@@ -43,6 +44,7 @@ function App() {
   }, []);
 
   return (
+    <SignedIn>
     <div className="dashboard">
       <header style={{ '--color': agent.color }}>
         <span className="emoji">{agent.emoji}</span>
@@ -50,6 +52,7 @@ function App() {
           <h1>{agent.name}</h1>
           <p>{agent.role}</p>
         </div>
+        <UserButton afterSignOutUrl="/" />
       </header>
 
       <div className="stats-grid">
@@ -107,6 +110,7 @@ function App() {
         </div>
       </div>
     </div>
+    </SignedIn>
   );
 }
 
