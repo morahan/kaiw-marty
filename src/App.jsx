@@ -1,132 +1,162 @@
 import { useState, useEffect } from 'react'
 import './App.css'
 
-// Tab components
-const HealthTab = () => (
+// Marty-specific theme colors
+const MartyTheme = {
+  primary: '#00d4ff',
+  secondary: '#ff6b35',
+  accent: '#00d4ff',
+}
+
+// Data fetching helpers (simulated for now - would connect to real APIs)
+const fetchTeamStatus = async () => {
+  // This would call sessions_list API
+  return [
+    { name: 'Marty', status: 'online', emoji: '⚡', role: 'Lead' },
+    { name: 'Aria', status: 'online', emoji: '🎵', role: 'Health' },
+    { name: 'Renzo', status: 'online', emoji: '🔥', role: 'Content' },
+    { name: 'Kaia', status: 'online', emoji: '🌊', role: 'Trends' },
+    { name: 'Thea', status: 'online', emoji: '🏛️', role: 'Reviews' },
+    { name: 'Badger', status: 'online', emoji: '🦡', role: 'Mode Switch' },
+    { name: 'Greta', status: 'online', emoji: '📚', role: 'Tasks' },
+    { name: 'Maverick', status: 'online', emoji: '🚦', role: 'Queue' },
+    { name: 'Freq', status: 'online', emoji: '🎛️', role: 'Audio' },
+    { name: 'Quanta', status: 'online', emoji: '⏱️', role: 'Metrics' },
+    { name: 'Reno', status: 'online', emoji: '📊', role: 'Crypto' },
+  ]
+}
+
+const fetchWorkoutFlowMetrics = async () => {
+  // This would connect to Notion/analytics
+  return {
+    articlesToday: 2,
+    articlesWeek: 12,
+    socialScheduled: 8,
+    pendingReviews: 3,
+    activeSessions: 11,
+  }
+}
+
+const fetchActiveTasks = async () => {
+  // This would query Linear/Todoist
+  return [
+    { id: 1, text: 'Morning briefing delivery', priority: 'urgent', agent: 'Marty' },
+    { id: 2, text: 'Article review for Thea', priority: 'high', agent: 'Thea' },
+    { id: 3, text: 'Trend scan for Kaia', priority: 'medium', agent: 'Kaia' },
+    { id: 4, text: 'NATIX market scan', priority: 'low', agent: 'Reno' },
+  ]
+}
+
+// Tab Components
+const OverviewTab = ({ metrics, tasks, team }) => (
   <div className="tab-content">
-    <h2>🌙 Health</h2>
-    <div className="cards">
-      <div className="card score-card">
-        <div className="score-circle sleep">
-          <span className="score">85</span>
-          <span className="label">Sleep</span>
-        </div>
+    <h2>⚡ Overview</h2>
+    <div className="overview-grid">
+      <div className="card metric-card">
+        <div className="metric-icon">📝</div>
+        <div className="metric-value">{metrics.articlesToday}</div>
+        <div className="metric-label">Articles Today</div>
       </div>
-      <div className="card score-card">
-        <div className="score-circle readiness">
-          <span className="score">78</span>
-          <span className="label">Ready</span>
-        </div>
+      <div className="card metric-card">
+        <div className="metric-icon">📅</div>
+        <div className="metric-value">{metrics.articlesWeek}</div>
+        <div className="metric-label">This Week</div>
       </div>
-      <div className="card score-card">
-        <div className="score-circle hrv">
-          <span className="score">42</span>
-          <span className="label">HRV</span>
-        </div>
+      <div className="card metric-card">
+        <div className="metric-icon">🐦</div>
+        <div className="metric-value">{metrics.socialScheduled}</div>
+        <div className="metric-label">Social Scheduled</div>
       </div>
-      <div className="card">
-        <h3>Activity</h3>
-        <div className="stat">
-          <span className="value">8,432</span>
-          <span className="label">Steps</span>
-        </div>
-        <div className="stat">
-          <span className="value">2,156</span>
-          <span className="label">Calories</span>
-        </div>
+      <div className="card metric-card">
+        <div className="metric-icon">👀</div>
+        <div className="metric-value">{metrics.pendingReviews}</div>
+        <div className="metric-label">Pending Reviews</div>
+      </div>
+    </div>
+    
+    <div className="card" style={{ marginTop: '1rem' }}>
+      <h3>🎯 Priority Tasks</h3>
+      <div className="priority-tasks">
+        {tasks.slice(0, 3).map(task => (
+          <div key={task.id} className={`priority-task ${task.priority}`}>
+            <span className={`priority-badge ${task.priority}`}>{task.priority.toUpperCase()}</span>
+            <span className="task-text">{task.text}</span>
+            <span className="task-agent">{task.agent}</span>
+          </div>
+        ))}
       </div>
     </div>
   </div>
 )
 
-const FamilyTab = () => (
+const TeamTab = ({ team }) => (
   <div className="tab-content">
-    <h2>👨‍👩‍👧‍👦 Family</h2>
-    <div className="cards family-cards">
-      <div className="card family-card">
-        <div className="avatar melissa">M</div>
-        <div className="info">
-          <h3>Melissa</h3>
-          <p className="birthday">🎂 Sep 1</p>
-        </div>
-      </div>
-      <div className="card family-card">
-        <div className="avatar elora">E</div>
-        <div className="info">
-          <h3>Elora</h3>
-          <p className="birthday">🎂 Aug 27</p>
-          <p className="age">~5 years</p>
-        </div>
-      </div>
-      <div className="card family-card">
-        <div className="avatar iris">I</div>
-        <div className="info">
-          <h3>Iris</h3>
-          <p className="birthday">🎂 Jan 30</p>
-          <p className="age">~2 years</p>
-        </div>
-      </div>
-      <div className="card family-card">
-        <div className="avatar lola">L</div>
-        <div className="info">
-          <h3>Lola</h3>
-          <p className="birthday">🎂 Jan 1</p>
-        </div>
-      </div>
-    </div>
-  </div>
-)
-
-const BusinessTab = () => (
-  <div className="tab-content">
-    <h2>⚡ Business</h2>
-    <div className="cards">
-      <div className="card">
-        <h3>📋 Pending Tasks</h3>
-        <ul className="task-list">
-          <li className="task high">Review article drafts</li>
-          <li className="task">Approve social calendar</li>
-          <li className="task">Check competitor intel</li>
-        </ul>
-      </div>
-      <div className="card">
-        <h3>📈 Metrics</h3>
-        <div className="stat-row">
-          <span>Articles this week:</span>
-          <span className="value">3</span>
-        </div>
-        <div className="stat-row">
-          <span>Social scheduled:</span>
-          <span className="value">7</span>
-        </div>
-      </div>
-    </div>
-  </div>
-)
-
-const TeamTab = () => (
-  <div className="tab-content">
-    <h2>🤖 Team</h2>
+    <h2>🤖 Team Status</h2>
     <div className="cards team-cards">
-      {[
-        { name: 'Marty', status: 'online', emoji: '⚡' },
-        { name: 'Aria', status: 'online', emoji: '🎵' },
-        { name: 'Renzo', status: 'online', emoji: '🔥' },
-        { name: 'Kaia', status: 'online', emoji: '🌊' },
-        { name: 'Thea', status: 'online', emoji: '🏛️' },
-        { name: 'Badger', status: 'online', emoji: '🦡' },
-        { name: 'Greta', status: 'offline', emoji: '📚' },
-        { name: 'Maverick', status: 'online', emoji: '🚦' },
-        { name: 'Freq', status: 'online', emoji: '🎛️' },
-        { name: 'Quanta', status: 'online', emoji: '⏱️' },
-        { name: 'Reno', status: 'offline', emoji: '📊' },
-      ].map(agent => (
+      {team.map(agent => (
         <div key={agent.name} className={`card agent-card ${agent.status}`}>
           <span className="agent-emoji">{agent.emoji}</span>
           <span className="agent-name">{agent.name}</span>
+          <span className="agent-role">{agent.role}</span>
           <span className={`status-dot ${agent.status}`}></span>
         </div>
       ))}
+    </div>
+  </div>
+)
+
+const BusinessTab = ({ metrics }) => (
+  <div className="tab-content">
+    <h2>💼 Business</h2>
+    <div className="cards">
+      <div className="card">
+        <h3>📈 Content Performance</h3>
+        <div className="stat-row">
+          <span>Articles this week:</span>
+          <span className="value">{metrics.articlesWeek}</span>
+        </div>
+        <div className="stat-row">
+          <span>Social posts:</span>
+          <span className="value">{metrics.socialScheduled}</span>
+        </div>
+        <div className="stat-row">
+          <span>Pending reviews:</span>
+          <span className="value warning">{metrics.pendingReviews}</span>
+        </div>
+      </div>
+      <div className="card">
+        <h3>🎯 Active Focus</h3>
+        <div className="focus-item">
+          <span className="focus-emoji">📝</span>
+          <span>Daily articles (2/day target)</span>
+        </div>
+        <div className="focus-item">
+          <span className="focus-emoji">🐦</span>
+          <span>X engagement & growth</span>
+        </div>
+        <div className="focus-item">
+          <span className="focus-emoji">📺</span>
+          <span>YouTube video production</span>
+        </div>
+      </div>
+    </div>
+  </div>
+)
+
+const TasksTab = ({ tasks }) => (
+  <div className="tab-content">
+    <h2>📋 Active Tasks</h2>
+    <div className="cards">
+      <div className="card task-card full-width">
+        {tasks.map(task => (
+          <div key={task.id} className={`task-row ${task.priority}`}>
+            <span className={`priority-indicator ${task.priority}`}></span>
+            <span className="task-text">{task.text}</span>
+            <span className="task-agent">{task.agent}</span>
+            <span className={`priority-label ${task.priority}`}>{task.priority}</span>
+          </div>
+        ))}
+      </div>
     </div>
   </div>
 )
@@ -137,43 +167,59 @@ const ActionsTab = () => (
     <div className="cards">
       <div className="card action-card urgent">
         <span className="priority">🔴 Urgent</span>
-        <p>Review pending article approvals</p>
+        <p>Review and approve pending articles</p>
       </div>
       <div className="card action-card">
         <span className="priority">🟡 Today</span>
-        <p>Check Oura ring - recovery low</p>
+        <p>Publish morning X post</p>
       </div>
       <div className="card action-card">
         <span className="priority">🟢 This Week</span>
-        <p>Plan weekend family activity</p>
+        <p>Record YouTube video #2</p>
       </div>
     </div>
   </div>
 )
 
 function App() {
-  const [activeTab, setActiveTab] = useState('health')
+  const [activeTab, setActiveTab] = useState('overview')
   const [time, setTime] = useState(new Date())
+  const [team, setTeam] = useState([])
+  const [metrics, setMetrics] = useState({ articlesToday: 0, articlesWeek: 0, socialScheduled: 0, pendingReviews: 0, activeSessions: 0 })
+  const [tasks, setTasks] = useState([])
 
   useEffect(() => {
     const timer = setInterval(() => setTime(new Date()), 60000)
+    
+    // Load data
+    fetchTeamStatus().then(setTeam)
+    fetchWorkoutFlowMetrics().then(setMetrics)
+    fetchActiveTasks().then(setTasks)
+    
     return () => clearInterval(timer)
   }, [])
 
   const tabs = [
-    { id: 'health', label: 'Health', icon: '🌙' },
-    { id: 'family', label: 'Family', icon: '👨‍👩‍👧‍👦' },
-    { id: 'business', label: 'Business', icon: '⚡' },
+    { id: 'overview', label: 'Overview', icon: '⚡' },
     { id: 'team', label: 'Team', icon: '🤖' },
+    { id: 'business', label: 'Business', icon: '💼' },
+    { id: 'tasks', label: 'Tasks', icon: '📋' },
     { id: 'actions', label: 'Actions', icon: '🎯' },
   ]
+
+  const greeting = () => {
+    const hour = time.getHours()
+    if (hour < 12) return 'Good morning'
+    if (hour < 18) return 'Good afternoon'
+    return 'Good evening'
+  }
 
   return (
     <div className="app">
       <header>
-        <h1>🎵 Aria</h1>
-        <p className="subtitle">Personal Dashboard</p>
-        <p className="time">{time.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}</p>
+        <h1>⚡ Marty</h1>
+        <p className="subtitle">{greeting()} — Michael</p>
+        <p className="time">{time.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })} · {time.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}</p>
       </header>
       
       <nav className="tabs">
@@ -190,10 +236,10 @@ function App() {
       </nav>
 
       <main>
-        {activeTab === 'health' && <HealthTab />}
-        {activeTab === 'family' && <FamilyTab />}
-        {activeTab === 'business' && <BusinessTab />}
-        {activeTab === 'team' && <TeamTab />}
+        {activeTab === 'overview' && <OverviewTab metrics={metrics} tasks={tasks} team={team} />}
+        {activeTab === 'team' && <TeamTab team={team} />}
+        {activeTab === 'business' && <BusinessTab metrics={metrics} />}
+        {activeTab === 'tasks' && <TasksTab tasks={tasks} />}
         {activeTab === 'actions' && <ActionsTab />}
       </main>
     </div>

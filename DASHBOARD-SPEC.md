@@ -1,53 +1,45 @@
-# Aria Dashboard - Specification
+# Marty Dashboard - Specification
 
 ## Overview
-Personal dashboard for Michael to see high-level important information from Aria (personal life assistant). Visual, not text-heavy. Beautiful, themed, unique.
+Personal dashboard for Michael to see high-level information about Marty (Lead Agent), the team, and Workout Flow business metrics. Visual with text overview.
 
 ## Data Sources
-- **Health**: Oura ring API (sleep, readiness, HRV, activity)
-- **Family**: Memory files (birthdays, events, notes)
-- **Business**: From Marty (task summaries, metrics)
-- **Team**: Agent status from sessions_list
-- **Personal**: Reminders, upcoming appointments
+- **Team Status**: sessions_list API (agent status)
+- **Business Metrics**: Notion (articles, social scheduled)
+- **Tasks**: Task management system (Linear/Todoist)
 
-## Dashboard Tabs/Sections
+## Dashboard Tabs
 
-### 1. Health (Oura)
-- Sleep score (circular gauge)
-- Readiness score
-- HRV trend (mini sparkline)
-- Activity: steps, calories
-- Last sync time
+### 1. Overview (Default)
+- Articles today / this week
+- Social posts scheduled
+- Pending reviews
+- Top 3 priority tasks at a glance
 
-### 2. Family
-- Family member cards (Melissa, Elora, Iris, Lola)
-- Upcoming birthdays/events
-- Quick notes
+### 2. Team
+- All 11 agents with online/offline status
+- Role labels (Content, Trends, Reviews, etc.)
 
 ### 3. Business
-- Tasks requiring attention
-- Key metrics from Marty
-- What's pending review
+- Content performance metrics
+- Active focus areas (articles, X, YouTube)
 
-### 4. Team
-- Agent online/offline status
-- Active sessions count
+### 4. Tasks
+- All active tasks with priority
+- Who owns each task
 
-### 5. Action Items
-- What needs Michael's attention today
-- Priority-sorted tasks
+### 5. Actions
+- What needs Michael's attention
+- Urgent / Today / This Week
 
 ## Design
-- Dark theme with accent colors
-- Aria branding (melody/air theme)
+- Dark theme with cyan/electric blue accent (#00d4ff)
 - Card-based layout
-- Gauges for scores
-- Color coding: green (good), yellow (warning), red (attention)
+- Priority color coding (red/yellow/cyan)
+- Clean, minimal text
 
-## Build Plan
-1. Set up React structure with tabs
-2. Create API service for data fetching
-3. Build individual tab components
-4. Style with CSS
-5. Add animations/transitions
-
+## Build
+```bash
+npm install
+npm run dev
+```
